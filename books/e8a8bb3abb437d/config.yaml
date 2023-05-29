@@ -1,0 +1,8 @@
+title: "お前今日何したんだよ"
+summary: "日々の勉強記録"
+topics: [メモ, 日記]
+published: true
+price: 0 # 有料の場合200〜5000
+# 本に含めるチャプターを順番に並べましょう
+chapters:
+    - やったこと
