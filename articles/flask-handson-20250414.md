@@ -11,44 +11,64 @@ Flask を使った Todo リスト＆LINE Bot 開発ハンズオン
 本ハンズオンでは、Flask の構造理解を目的に、SQLite を用いた簡易 Todo リスト API と LINE Messaging API 連携 Bot を作成します。Mac 環境で仮想環境を構築し、Flask の MVC 的なプロジェクト構成を体験します。最終的に、**Flask のアプリケーション構造（アプリケーションファクトリ、Blueprint、テンプレート構成、サービス層の分離など）**を理解することがゴールです。所要時間は約 4 時間を想定しています。
 
 このハンズオンで実装する内容は以下のとおりです：
-• Python 仮想環境の構築（Mac 環境）
-• Flask プロジェクトの構成（アプリケーションファクトリと Blueprint、モデルの分離）
-• SQLite データベースの初期化スクリプトと操作方法
-• Todo リストの REST API（CRUD）実装と Flask における MVC 構造の解説
-• LINE Messaging API のセットアップ手順（チャネル作成、Webhook 設定、アクセストークン取得）
-• Flask アプリで LINE の Webhook を受信し、署名検証とメッセージ内容に応じた Todo 操作（追加・一覧表示・削除）
-• 各ステップのコード例と動作確認方法（curl や Postman による API テスト、実際の LINE Bot テスト）
 
-目次： 1. 環境準備と仮想環境構築 2. Flask プロジェクト構成の作成 3. SQLite データベースの準備 4. Todo モデルと CRUD API の実装 5. LINE Messaging API のセットアップ 6. Flask で LINE Webhook を処理して Todo 操作 7. アプリの起動と動作確認 8. まとめ：Flask アプリ構造のポイント
+- Python 仮想環境の構築（Mac 環境）
+- Flask プロジェクトの構成（アプリケーションファクトリと Blueprint、モデルの分離）
+- SQLite データベースの初期化スクリプトと操作方法
+- Todo リストの REST API（CRUD）実装と Flask における MVC 構造の解説
+- LINE Messaging API のセットアップ手順（チャネル作成、Webhook 設定、アクセストークン取得）
+- Flask アプリで LINE の Webhook を受信し、署名検証とメッセージ内容に応じた Todo 操作（追加・一覧表示・削除）
+- 各ステップのコード例と動作確認方法（curl や Postman による API テスト、実際の LINE Bot テスト）
+
+目次：
+
+1. 環境準備と仮想環境構築
+2. Flask プロジェクト構成の作成
+3. SQLite データベースの準備
+4. Todo モデルと CRUD API の実装
+5. LINE Messaging API のセットアップ
+6. Flask で LINE Webhook を処理して Todo 操作
+7. アプリの起動と動作確認
+8. まとめ：Flask アプリ構造のポイント
 
 ⸻
 
 環境準備と仮想環境構築
 
-前提条件：Mac に Python 3 系がインストールされていることを前提とします（ターミナルで python3 --version で確認可能）。また、SQLite は Python に標準モジュールとして含まれているため追加インストール不要です。
+前提条件：Mac に Python 3 系がインストールされていることを前提とします（ターミナルで `python3 --version` で確認可能）。また、SQLite は Python に標準モジュールとして含まれているため追加インストール不要です。
 
-まず、開発用のディレクトリを作成し、その中で Python の仮想環境を構築します。仮想環境を使うことで、他のプロジェクトと切り離して必要なパッケージを管理できます。以下の手順を実行してください： 1. ターミナルでプロジェクト用ディレクトリを作成して移動します。例：
+まず、開発用のディレクトリを作成し、その中で Python の仮想環境を構築します。仮想環境を使うことで、他のプロジェクトと切り離して必要なパッケージを管理できます。以下の手順を実行してください：
 
+1. ターミナルでプロジェクト用ディレクトリを作成して移動します。例：
+
+```bash
 $ mkdir flask_todo_line_bot && cd flask_todo_line_bot
+```
 
-    2.	仮想環境を作成します（ここではPython標準のvenvモジュールを使用）。例：
+2. 仮想環境を作成します（ここでは Python 標準の venv モジュールを使用）。例：
 
+```bash
 $ python3 -m venv venv
+```
 
 すると venv という仮想環境ディレクトリが作成されます。
 
-    3.	仮想環境を有効化します：
+3. 仮想環境を有効化します：
 
+```bash
 $ source venv/bin/activate
+```
 
 プロンプトに(venv)と表示されれば仮想環境の有効化完了です。
 
-    4.	開発に必要なPythonパッケージをインストールします：
+4. 開発に必要な Python パッケージをインストールします：
 
+```bash
 (venv) $ pip install Flask requests
+```
 
-    •	Flask：軽量なWebフレームワーク。
-    •	requests：LINEのAPIにHTTPリクエストを送るために使用（標準ライブラリでも可能ですが、利便性のため利用）。
+- Flask：軽量な Web フレームワーク。
+- requests：LINE の API に HTTP リクエストを送るために使用（標準ライブラリでも可能ですが、利便性のため利用）。
 
 ※ LINE 公式の SDK（line-bot-sdk-python）を利用する方法もありますが、本ハンズオンでは Flask の学習を優先し、SDK を使わずに実装してみます。
 
